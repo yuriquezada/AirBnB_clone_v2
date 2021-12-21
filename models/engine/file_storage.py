@@ -17,10 +17,10 @@ class FileStorage:
             for key in self.__objects:
                 name = key.split('.')
                 # print("NAME: {}".format(name))
-                # print("CLSNAME: {}".format(cls.__name__)) 
+                # print("CLSNAME: {}".format(cls.__name__))
                 if name[0] == cls.__name__:
                     my_dict[key] = self.__objects[key]
-            # print("MY_DICT: {}".format(my_dict)) 
+            # print("MY_DICT: {}".format(my_dict))
             return my_dict
 
     def new(self, obj):
