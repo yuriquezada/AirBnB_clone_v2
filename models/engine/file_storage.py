@@ -13,15 +13,15 @@ class FileStorage:
         Return:
             returns a dictionary of __object
         """
-        if cls is None:
-            return self.__objects
-        else:
-            my_dict = {}
-            for key in self.__objects:
-                name = key.split('.')
-                if name[0] == cls.__name__:
-                    my_dict[key] = self.__objects[key]
-            return my_dict
+        if cls is not None:
+            if type(cls) == str:
+                cls = eval(cls)
+            cls_dict = {}
+            for k, v in self.__objects.items():
+                if type(v) == cls:
+                    cls_dict[k] = v
+            return cls_dict
+        return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -61,7 +61,12 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
-        """ delete obj from __objects """
-        if obj:
-            del self.__objects[obj.__class__.__name__ + '.' + obj.id]
-            self.save()
+        """Delete a given object from __objects, if it exists."""
+        try:
+            del self.__objects["{}.{}".format(type(obj).__name__, obj.id)]
+        except (AttributeError, KeyError):
+            pass
+        
+    def close(self):
+        """Call the reload method."""
+        self.reload()
