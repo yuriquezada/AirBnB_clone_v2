@@ -13,15 +13,14 @@ class FileStorage:
         Return:
             returns a dictionary of __object
         """
-        if cls is None:
-            return self.__objects
-        else:
+        if cls is not None:
             my_dict = {}
             for key in self.__objects:
                 name = key.split('.')
                 if name[0] == cls.__name__:
                     my_dict[key] = self.__objects[key]
             return my_dict
+        return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
