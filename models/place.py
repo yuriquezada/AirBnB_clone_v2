@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
-from models.amenity import Amenity
+from os import getenv
+
 from models.review import Review
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
@@ -13,9 +14,9 @@ place_amenity = Table('place_amenity', Base.metadata, Column('place_id',
                       ForeignKey('amenities.id'), nullable=False))
 
 
-class Place(BaseModel, Base):
-    """ A place to stay """
-    if models.type_storage == "db":
+if getenv("HBNB_TYPE_STORAGE") == "db":
+    class Place(BaseModel, Base):
+        """ A place to stay """
         __tablename__ = "places"
         city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
         user_id = Column(String(60),  ForeignKey('users.id'), nullable=False)
@@ -30,7 +31,9 @@ class Place(BaseModel, Base):
 
         amenities = relationship("Amenity", secondary=place_amenity,
                                  viewonly=False)
-    else:
+else:
+    class Place(BaseModel):
+        """Defined class to work with FileStorage"""
         city_id = ""
         user_id = ""
         name = ""
@@ -43,18 +46,19 @@ class Place(BaseModel, Base):
         longitude = 0.0
         amenity_ids = []
 
-        @property
-        def reviews(self):
-            return models.storage.all(Review)
+    @property
+    def reviews(self):
+        return models.storage.all(Review)
 
-        @property
-        def amenities(self):
-            '''Function getter to amenities'''
-            self.amenity_ids = models.storage.all(Amenity)
-            return self.amenity_ids
+    @property
+    def amenities(self):
+        '''Function getter to amenities'''
+        from models.amenity import Amenity
+        self.amenity_ids = models.storage.all(Amenity)
+        return self.amenity_ids
 
-        @amenities.setter
-        def amenities(self, id):
-            '''Function setter to amenities'''
-            if id.__class__.__name__ == "Amenity":
-                self.amenity_ids.append(id)
+    @amenities.setter
+    def amenities(self, id):
+        '''Function setter to amenities'''
+        if id.__class__.__name__ == "Amenity":
+            self.amenity_ids.append(id)

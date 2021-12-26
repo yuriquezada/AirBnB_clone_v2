@@ -1,16 +1,15 @@
 #!/usr/bin/python3
 """This module defines a class User"""
-from os import lseek
+from os import getenv
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import String
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
-import models
 
 
-class User(BaseModel, Base):
-    """This class defines a user by various attributes"""
-    if models.type_storage == "db":
+if getenv("HBNB_TYPE_STORAGE") == "db":
+    class User(BaseModel, Base):
+        """This class defines a user by various attributes"""
         __tablename__ = "users"
         email = Column(String(128), nullable=False)
         password = Column(String(128), nullable=False)
@@ -19,7 +18,9 @@ class User(BaseModel, Base):
 
         places = relationship("Place")
         reviews = relationship("Review")
-    else:
+else:
+    class User(BaseModel):
+        '''Defined class to work with FileStorage'''
         email = ''
         password = ''
         first_name = ''
