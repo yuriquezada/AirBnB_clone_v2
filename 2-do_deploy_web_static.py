@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 """script that deploy archive!"""
-from fabric.api import *
+from fabric.api import env, local, put, run
 from datetime import datetime
-
+env.hosts = ['34.138.156.136', '35.172.229.124']
+env.user = 'ubuntu'
 
 def do_pack():
     """function that generates tgz archive"""
@@ -16,18 +17,21 @@ def do_pack():
         return None
 
 def do_deploy(archive_path):
-    """function that distributes an archive to your web servers, using the function do_deploy"""
+    """function that distributes an archive to your web servers"""
     try:
-        filename=archive_path.split("/")[-1]
-        onlyname=filename.split(".")[0]
-        uncompress_path="/data/web_static/releases/{}".formal(onlyname)
-        put(archive_path, "/tmp/")
-        run('mkdir -p {}').format(uncompress_path)
-        run('tar -xf /tmp/{} {}'.format(filename, uncompress_path))
-        run('rm /tmp/{}'.format(filename))
-        run('rm -rf /data/web_static/current')
-        run('ln -s {} /data/web_static/current'.format(uncompress_path))
+        filename = archive_path.split("/")[-1]
+        onlyname = filename.split(".")[0]
+        uncompress_path = "/data/web_static/releases/{}".format(onlyname)
+        put(archive_path, '/tmp/')
+        run('sudo mkdir -p {}/'.format(uncompress_path))
+        run('sudo tar -xzf /tmp/{} -C {}'.format(filename, uncompress_path))
+        run('sudo rm /tmp/{}'.format(filename))
+        run('sudo mv {0}/web_static/* {0}/'.format(uncompress_path))
+        run('sudo rm -rf {}/web_static'.format(uncompress_path))
+        run('sudo rm -rf /data/web_static/current')
+        run('sudo ln -s {}/ /data/web_static/current'.format(uncompress_path))
         print('New version deployed!')
         return True
-    except Exception as e:
+    except BaseException:
+        print('Do it again')
         return False
