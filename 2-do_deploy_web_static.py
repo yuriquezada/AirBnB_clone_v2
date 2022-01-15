@@ -5,6 +5,7 @@ from datetime import datetime
 env.hosts = ['34.138.156.136', '35.172.229.124']
 env.user = 'ubuntu'
 
+
 def do_pack():
     """function that generates tgz archive"""
     try:
@@ -15,6 +16,7 @@ def do_pack():
         return file_name
     except Exception as e:
         return None
+
 
 def do_deploy(archive_path):
     """function that distributes an archive to your web servers"""
